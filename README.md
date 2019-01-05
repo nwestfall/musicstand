@@ -1,6 +1,6 @@
-# musicstand
+# musicstand for desktop
 
-> Music stand from planning center for desktop
+> Music stand (unofficial) from planning center for desktop
 
 #### Build Setup
 
@@ -22,6 +22,19 @@ npm test
 npm run lint
 
 ```
+
+#### More coming
+
+ - Offline setup
+ - Change keys (offline)
+ - Annotate songs
+ - Better login support
+ - Built in click for song BPM
+ - Built in Pads for key of song
+
+#### Find bugs or have ideas?
+
+Please create an issue and we'd love to work on it!
 
 ---
 
