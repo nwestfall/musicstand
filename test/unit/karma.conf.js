@@ -52,7 +52,7 @@ module.exports = config => {
     preprocessors: {
       './index.js': ['webpack', 'sourcemap']
     },
-    reporters: ['spec', 'coverage'],
+    reporters: ['spec', 'coverage', 'junit'],
     singleRun: true,
     webpack: webpackConfig,
     webpackMiddleware: {
