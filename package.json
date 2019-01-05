@@ -1,7 +1,7 @@
 {
   "name": "musicstand-desktop",
   "productName": "musicstand for desktop",
-  "version": "0.1.1",
+  "version": "0.1.123",
   "author": "Nathan Westfall <nathan@fistbumpstudios.com>",
   "description": "Music stand (unofficial) from planning center for desktop",
   "license": "MIT",
