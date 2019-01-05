@@ -2,6 +2,8 @@
 
 > Music stand (unofficial) from planning center for desktop
 
+[![Build status](https://dev.azure.com/nathanwestfall/MusicStand/_apis/build/status/MusicStand-CI)](https://dev.azure.com/nathanwestfall/MusicStand/_build/latest?definitionId=18)
+
 #### Build Setup
 
 ``` bash
