@@ -49,14 +49,12 @@
         if(force || (email != '' && isNullOrUndefined(person)))
         {
           that.startLoading()
-          axios.get('https://api.planningcenteronline.com/people/v2/people?where[search_name_or_email]=' + email, {
-            auth: {
-              username: settings.get('applicationId'),
-              password: settings.get('secret')
-            }
+          axios.get('https://api.planningcenteronline.com/people/v2/me', {
+            headers: { 'Authorization': `Bearer ${settings.get('tokenInfo').access_token}` }
           }).then(function(resp) {
-            if(resp.data.data && resp.data.data.length == 1) {
-              person = resp.data.data[0]
+            console.log(resp)
+            if(resp.data.data) {
+              person = resp.data.data
               settings.set('person', person)
             }
           }).catch(function(error) {

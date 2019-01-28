@@ -35,15 +35,12 @@
         if(!isNullOrUndefined(that.$data.person)) {
           that.startLoading()
           axios.get('https://api.planningcenteronline.com/services/v2/people/' + that.$data.person.id + '/schedules', {
-            auth: {
-              username: settings.get('applicationId'),
-              password: settings.get('secret')
-            }
+            headers: { 'Authorization': `Bearer ${settings.get('tokenInfo').access_token}` }
           }).then(function(resp) {
             if(resp.data.data && resp.data.data.length > 0) {
               that.$data.schedules = resp.data.data.sort(function(a, b) {
                 if(a.attributes.dates != b.attributes.dates)
-                  return a.attributes.dates <= b.attributes.dates
+                  return a.attributes.dates >= b.attributes.dates
                 else
                   return a.attributes.service_type_name >= b.attributes.service_type_name
               })

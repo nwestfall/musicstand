@@ -6,8 +6,7 @@
         <span class="title">
           Welcome to Music Stand for Desktop!
         </span>
-        <get-started v-if="setupNeeded"></get-started>
-        <info v-if="!setupNeeded"></info>
+        <info></info>
       </div>
 
       <div class="right-side">
@@ -18,27 +17,16 @@
 </template>
 
 <script scoped>
-  import GetStarted from './LandingPage/GetStarted'
   import Info from './LandingPage/Info'
   import Schedules from './LandingPage/Schedules'
 
   const settings = require('electron-settings');
 
-  function isSetupNeeded() {
-    if((settings.has('applicationId') && settings.get('applicationId').length > 0) 
-          && (settings.has('secret') && settings.get('secret').length > 0)
-          && (settings.has('email') && settings.get('email').length > 0)) {
-            return false
-          }
-    return true
-  }
-
   export default {
     name: 'landing-page',
-    components: { GetStarted, Info, Schedules },
+    components: { Info, Schedules },
     data() {
       return {
-        setupNeeded: true
       }
     },
     methods: {
@@ -47,18 +35,7 @@
       }
     },
     created: function() {
-      this.$data.setupNeeded = isSetupNeeded()
       var that = this;
-
-      settings.watch('applicationId', (nv, ov) => {
-        that.$data.setupNeeded = isSetupNeeded()
-      })
-      settings.watch('secret', (ov, nv) => {
-        that.$data.setupNeeded = isSetupNeeded()
-      })
-      settings.watch('email', (nv, ov) => {
-        that.$data.setupNeeded = isSetupNeeded()
-      })
     }
   }
 </script>

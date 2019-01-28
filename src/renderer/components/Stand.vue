@@ -80,17 +80,11 @@
             if(!isNullOrUndefined(that.$data.schedule)) {
                 // get plan
                 axios.get('https://api.planningcenteronline.com/services/v2/plans/' + that.$data.schedule.relationships.plan.data.id, {
-                    auth: {
-                        username: settings.get('applicationId'),
-                        password: settings.get('secret')
-                    }
+                    headers: { 'Authorization': `Bearer ${settings.get('tokenInfo').access_token}` }
                 }).then(function(resp) {
                     // get plan items
                     axios.get(resp.data.data.links.items + '?include=arrangement', {
-                        auth: {
-                            username: settings.get('applicationId'),
-                            password: settings.get('secret')
-                        }
+                        headers: { 'Authorization': `Bearer ${settings.get('tokenInfo').access_token}` }
                     }).then(function(resp2) {
                         const songsInOrder = resp2.data.data.filter(function(i) {
                             return i.attributes.item_type == "song"
