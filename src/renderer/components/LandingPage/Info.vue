@@ -26,6 +26,7 @@
   const axios = require('axios');
   import { isNullOrUndefined } from 'util'
   import { mapGetters, mapActions } from 'vuex'
+  import { checkAndRefreshToken } from '../../../main/auth';
 
   export default {
     data () {
@@ -49,19 +50,23 @@
         if(force || (email != '' && isNullOrUndefined(person)))
         {
           that.startLoading()
-          axios.get('https://api.planningcenteronline.com/people/v2/people?where[search_name_or_email]=' + email, {
-            auth: {
-              username: settings.get('applicationId'),
-              password: settings.get('secret')
-            }
-          }).then(function(resp) {
-            if(resp.data.data && resp.data.data.length == 1) {
-              person = resp.data.data[0]
-              settings.set('person', person)
-            }
+          checkAndRefreshToken().then(function(tokenInfo) {
+            axios.get('https://api.planningcenteronline.com/people/v2/me', {
+              headers: { 'Authorization': `Bearer ${tokenInfo.access_token}` },
+              crossDomain: true
+            }).then(function(resp) {
+              console.log(resp)
+              if(resp.data.data) {
+                person = resp.data.data
+                settings.set('person', person)
+              }
+            }).catch(function(error) {
+              console.error(error)
+            }).then(function() {
+              that.stopLoading()
+            })
           }).catch(function(error) {
             console.error(error)
-          }).then(function() {
             that.stopLoading()
           })
         }

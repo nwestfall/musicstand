@@ -29,6 +29,7 @@
   import { mapGetters, mapActions } from 'vuex'
   import { VueTabs, VTab } from 'vue-nav-tabs/dist/vue-tabs.js'
   import 'vue-nav-tabs/themes/vue-tabs.css'
+  import { checkAndRefreshToken } from '../../main/auth';
 
   export default {
     name: 'stand',
@@ -79,52 +80,51 @@
             that.startLoading()
             if(!isNullOrUndefined(that.$data.schedule)) {
                 // get plan
-                axios.get('https://api.planningcenteronline.com/services/v2/plans/' + that.$data.schedule.relationships.plan.data.id, {
-                    auth: {
-                        username: settings.get('applicationId'),
-                        password: settings.get('secret')
-                    }
-                }).then(function(resp) {
-                    // get plan items
-                    axios.get(resp.data.data.links.items + '?include=arrangement', {
-                        auth: {
-                            username: settings.get('applicationId'),
-                            password: settings.get('secret')
-                        }
-                    }).then(function(resp2) {
-                        const songsInOrder = resp2.data.data.filter(function(i) {
-                            return i.attributes.item_type == "song"
-                        })
-                        const arrangements = resp2.data.included.filter(function(i) {
-                            return i.type == "Arrangement"
-                        })
-
-                        that.$data.songs = []
-                        var arrangementsUsed = []
-                        for(var i = 0; i < songsInOrder.length; i++) {
-                            let song = songsInOrder[i]
-                            let possibleArrangements = arrangements.filter(function(a) {
-                                return a.id == song.relationships.arrangement.data.id
+                checkAndRefreshToken().then(function(tokenInfo) {
+                    axios.get('https://api.planningcenteronline.com/services/v2/plans/' + that.$data.schedule.relationships.plan.data.id, {
+                        headers: { 'Authorization': `Bearer ${tokenInfo.access_token}` }
+                    }).then(function(resp) {
+                        // get plan items
+                        axios.get(resp.data.data.links.items + '?include=arrangement', {
+                            headers: { 'Authorization': `Bearer ${tokenInfo.access_token}` }
+                        }).then(function(resp2) {
+                            const songsInOrder = resp2.data.data.filter(function(i) {
+                                return i.attributes.item_type == "song"
                             })
-                            if(possibleArrangements.length == 1 && arrangementsUsed.indexOf(possibleArrangements[0].id) == -1) {
-                                arrangementsUsed.push(possibleArrangements[0].id)
-                                that.$data.songs.push({
-                                    song: song,
-                                    arrangement: possibleArrangements[0],
-                                    formattedChordChart: that.formatSong(possibleArrangements[0].attributes.chord_chart)
-                                })
-                            }
-                        }
+                            const arrangements = resp2.data.included.filter(function(i) {
+                                return i.type == "Arrangement"
+                            })
 
-                        var songItems = document.querySelector('.music')
-                    }).catch(function(error2) {
-                        console.error(error2)
+                            that.$data.songs = []
+                            var arrangementsUsed = []
+                            for(var i = 0; i < songsInOrder.length; i++) {
+                                let song = songsInOrder[i]
+                                let possibleArrangements = arrangements.filter(function(a) {
+                                    return a.id == song.relationships.arrangement.data.id
+                                })
+                                if(possibleArrangements.length == 1 && arrangementsUsed.indexOf(possibleArrangements[0].id) == -1) {
+                                    arrangementsUsed.push(possibleArrangements[0].id)
+                                    that.$data.songs.push({
+                                        song: song,
+                                        arrangement: possibleArrangements[0],
+                                        formattedChordChart: that.formatSong(possibleArrangements[0].attributes.chord_chart)
+                                    })
+                                }
+                            }
+
+                            var songItems = document.querySelector('.music')
+                        }).catch(function(error2) {
+                            console.error(error2)
+                        }).then(function() {
+                            that.stopLoading()
+                        })
+                    }).catch(function(error) {
+                        console.error(error)
                     }).then(function() {
-                        that.stopLoading()
                     })
                 }).catch(function(error) {
                     console.error(error)
-                }).then(function() {
+                    that.stopLoading()
                 })
             }
         }

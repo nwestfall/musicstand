@@ -1,7 +1,7 @@
 {
   "name": "musicstand-desktop",
   "productName": "musicstand for desktop",
-  "version": "0.1.123",
+  "version": "0.1.0",
   "author": "Nathan Westfall <nathan@fistbumpstudios.com>",
   "description": "Music stand (unofficial) from planning center for desktop",
   "license": "MIT",
@@ -27,7 +27,9 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "electron-oauth-helper": "^3.0.0",
     "electron-settings": "^3.2.0",
+    "moment": "^2.24.0",
     "vue": "^2.5.16",
     "vue-electron": "^1.0.6",
     "vue-loading-overlay": "^3.1.1",
