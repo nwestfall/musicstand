@@ -13,6 +13,7 @@
   const axios = require('axios')
   import { isNullOrUndefined } from 'util'
   import { mapGetters, mapActions } from 'vuex'
+  import { checkAndRefreshToken } from '../../../main/auth';
 
   export default {
     data () {
@@ -34,20 +35,25 @@
 
         if(!isNullOrUndefined(that.$data.person)) {
           that.startLoading()
-          axios.get('https://api.planningcenteronline.com/services/v2/people/' + that.$data.person.id + '/schedules', {
-            headers: { 'Authorization': `Bearer ${settings.get('tokenInfo').access_token}` }
-          }).then(function(resp) {
-            if(resp.data.data && resp.data.data.length > 0) {
-              that.$data.schedules = resp.data.data.sort(function(a, b) {
-                if(a.attributes.dates != b.attributes.dates)
-                  return a.attributes.dates >= b.attributes.dates
-                else
-                  return a.attributes.service_type_name >= b.attributes.service_type_name
-              })
-            }
+          checkAndRefreshToken().then(function(tokenInfo) {
+            axios.get('https://api.planningcenteronline.com/services/v2/people/' + that.$data.person.id + '/schedules', {
+              headers: { 'Authorization': `Bearer ${tokenInfo.access_token}` }
+            }).then(function(resp) {
+              if(resp.data.data && resp.data.data.length > 0) {
+                that.$data.schedules = resp.data.data.sort(function(a, b) {
+                  if(a.attributes.dates != b.attributes.dates)
+                    return a.attributes.dates >= b.attributes.dates
+                  else
+                    return a.attributes.service_type_name >= b.attributes.service_type_name
+                })
+              }
+            }).catch(function(error) {
+              console.error(error)
+            }).then(function() {
+              that.stopLoading()
+            })
           }).catch(function(error) {
             console.error(error)
-          }).then(function() {
             that.stopLoading()
           })
         }
